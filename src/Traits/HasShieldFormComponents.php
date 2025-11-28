@@ -37,16 +37,19 @@ trait HasShieldFormComponents
 
     public static function getResourceEntitiesSchema(): ?array
     {
+
         return collect(FilamentShield::getResources())
             ->map(function (array $entity): \Filament\Schemas\Components\Section {
                 $sectionLabel = strval(
                     static::shield()->hasLocalizedPermissionLabels()
-                    ? FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
+                    ? 
+                    (FilamentShield::getLocalizedResourceNavigationGroup($entity['resourceFqcn'])  ?             
+                    FilamentShield::getLocalizedResourceNavigationGroup($entity['resourceFqcn']).' > ' : '' ) . FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
                     : $entity['model']
                 );
 
                 return Section::make($sectionLabel)
-                    ->description(fn (): \Illuminate\Support\HtmlString => new HtmlString('<span style="word-break: break-word;">' . Utils::showModelPath($entity['modelFqcn']) . '</span>'))
+                    ->description(fn (): \Illuminate\Support\HtmlString => new HtmlString('<span style="word-break: break-word;">'.Utils::showModelPath($entity['modelFqcn']).'</span>'))
                     ->compact()
                     ->schema([
                         static::getCheckBoxListComponentForResource($entity),
@@ -199,7 +202,7 @@ trait HasShieldFormComponents
             ]);
     }
 
-    public static function getCheckboxListFormComponent(string $name, array $options, bool $searchable = true, array | int | string | null $columns = null, array | int | string | null $columnSpan = null): Component
+    public static function getCheckboxListFormComponent(string $name, array $options, bool $searchable = true, array|int|string|null $columns = null, array|int|string|null $columnSpan = null): Component
     {
         return CheckboxList::make($name)
             ->hiddenLabel()

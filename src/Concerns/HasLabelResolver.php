@@ -28,14 +28,14 @@ trait HasLabelResolver
         };
     }
 
-    public function getLocalizedResourceLabel(Resource | string $resource): string
+    public function getLocalizedResourceLabel(Resource|string $resource): string
     {
         $resource = is_string($resource) ? resolve($resource) : $resource;
 
         return Str::of($resource::getModelLabel())->headline()->toString();
     }
 
-    public function getLocalizedPageLabel(Page | string $page): string
+    public function getLocalizedPageLabel(Page|string $page): string
     {
         $page = is_string($page) ? resolve($page) : $page;
 
@@ -44,19 +44,19 @@ trait HasLabelResolver
                 ?? $page->getNavigationLabel() // @phpstan-ignore-line
                 ?? __(Str::of(class_basename($page))
                     ->snake()
-                    ->prepend(Utils::getConfig()->localization->key . '.')
+                    ->prepend(Utils::getConfig()->localization->key.'.')
                     ->toString())
                 ?? Str::of(class_basename($page))->headline()->toString();
     }
 
-    public function getLocalizedWidgetLabel(Widget | string $widget): string
+    public function getLocalizedWidgetLabel(Widget|string $widget): string
     {
         $widget = is_string($widget) ? resolve($widget) : $widget;
 
         return match (true) {
             $widget instanceof TableWidget => (string) invade($widget)->makeTable()->getHeading(), // @phpstan-ignore-line
             $this->hasValidHeading($widget) => (string) invade($widget)->getHeading(),
-            default => __(Str::of(class_basename($widget))->snake()->prepend(Utils::getConfig()->localization->key . '.')->toString()) ?? str($widget)
+            default => __(Str::of(class_basename($widget))->snake()->prepend(Utils::getConfig()->localization->key.'.')->toString()) ?? str($widget)
                 ->afterLast('\\')
                 ->headline()
                 ->toString(),
@@ -95,5 +95,13 @@ trait HasLabelResolver
         return $localizationConfig->enabled && Lang::has("$localizationConfig->key.$permission")
             ? __("$localizationConfig->key.$permission")
             : Str::of($permission)->headline()->toString();
+    }
+
+    public function getLocalizedResourceNavigationGroup(Resource|string $resource): string
+    {
+        $resource = is_string($resource) ? resolve($resource) : $resource;
+
+        return Str::of($resource::getNavigationGroup())->headline()->toString();
+
     }
 }
