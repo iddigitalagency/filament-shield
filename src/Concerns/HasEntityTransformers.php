@@ -7,6 +7,7 @@ namespace BezhanSalleh\FilamentShield\Concerns;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Widgets\WidgetConfiguration;
 use Illuminate\Support\Str;
+use Filament\Facades\Filament;
 
 trait HasEntityTransformers
 {
@@ -22,7 +23,33 @@ trait HasEntityTransformers
                     'permissions' => $this->getDefaultPermissionKeys($resource, $this->getDefaultPolicyMethodsOrFor($resource)),
                 ],
             ])
-            ->sortKeys()
+            ->sortKeysUsing(function (string $a, string $b): int {
+                $instanceA = new $a;
+                $instanceB = new $b;
+
+                $currentPanel = Filament::getCurrentPanel();
+                $navGroups = $currentPanel->getNavigationGroups();
+                $navGroupKeys = array_keys($navGroups);
+
+                if (! $instanceA->getNavigationGroup()) {
+                    return 0;
+                }
+
+                if (! $instanceB->getNavigationGroup()) {
+                    return 0;
+                }
+
+                $compareGroups = array_search($instanceA->getNavigationGroup(), $navGroupKeys) <=> array_search($instanceB->getNavigationGroup(), $navGroupKeys);
+
+                if ($compareGroups !== 0) {
+
+                    return $compareGroups;
+                } else {
+                    return $instanceA->getNavigationSort() <=> $instanceB->getNavigationSort();
+                }
+
+                return 0;
+            })
             ->toArray();
     }
 
