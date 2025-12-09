@@ -104,7 +104,7 @@ class FilamentShield
                 ->mapWithKeys(fn (string $affix): array => [
                     $this->format('camel', $affix) => [
                         'key' => $this->buildPermissionKey($entity, $affix, $subject),
-                        'label' => $this->getAffixLabel($affix, $entity) . ' ' . $this->resolveLabel($entity),
+                        'label' => $this->getAffixLabel($affix, $entity),
                     ],
                 ])
                 ->uniqueStrict()
