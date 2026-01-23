@@ -32,7 +32,8 @@ trait HasLabelResolver
     {
         $resource = is_string($resource) ? resolve($resource) : $resource;
 
-        return Str::of($resource::getModelLabel())->headline()->toString();
+         return $resource::getNavigationLabel();
+
     }
 
     public function getLocalizedPageLabel(Page|string $page): string
