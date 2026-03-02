@@ -22,8 +22,10 @@ trait HasLabelResolver
     {
         $resource = is_string($resource) ? resolve($resource) : $resource;
 
-        return Str::of($resource::getModelLabel())->headline()->toString();
+         return $resource::getNavigationLabel();
+
     }
+
 
     /**
      * Get page label using Filament's methods with fallback chain.
@@ -33,6 +35,7 @@ trait HasLabelResolver
         $page = is_string($page) ? resolve($page) : $page;
 
         return $page->getTitle() // @phpstan-ignore-line
+
             ?? $page->getHeading() // @phpstan-ignore-line
             ?? $page->getNavigationLabel() // @phpstan-ignore-line
             ?? Str::of(class_basename($page))->headline()->toString();
@@ -41,13 +44,15 @@ trait HasLabelResolver
     /**
      * Get widget label using Filament's methods with fallback chain.
      */
-    public function getLocalizedWidgetLabel(Widget | string $widget): string
+    public function getLocalizedWidgetLabel(Widget|string $widget): string
+
     {
         $widget = is_string($widget) ? resolve($widget) : $widget;
 
         return match (true) {
             $widget instanceof TableWidget => (string) invade($widget)->makeTable()->getHeading(), // @phpstan-ignore-line
             $this->hasValidHeading($widget) => (string) invade($widget)->getHeading(),
+
             default => Str::of(class_basename($widget))->headline()->toString(),
         };
     }
@@ -173,5 +178,13 @@ trait HasLabelResolver
     {
         return method_exists($widget, 'getHeading')
             && filled(invade($widget)->getHeading());
+    }
+
+    public function getLocalizedResourceNavigationGroup(Resource|string $resource): string
+    {
+        $resource = is_string($resource) ? resolve($resource) : $resource;
+
+        return Str::of($resource::getNavigationGroup())->headline()->toString();
+
     }
 }

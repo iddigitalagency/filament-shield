@@ -37,9 +37,10 @@ trait CanManipulateFiles
 
         foreach ($replacements as $methodName => $replacement) {
             if (is_array($replacement) && isset($replacement['stub'], $replacement['permission'])) {
-
+                
                 if (! $this->fileExists($methodStubPath = base_path(sprintf('stubs/filament-shield/%s.stub', $replacement['stub'])))) {
                     $methodStubPath = $this->getDefaultStubPath() . sprintf('/%s.stub', $replacement['stub']);
+
                 }
 
                 $methodStub = Str::of($filesystem->get($methodStubPath));
